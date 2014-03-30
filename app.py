@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from bottle import Bottle, route, run, request, redirect
+from flask import Flask, request, session, redirect
 
 try:
     from config import GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
@@ -9,7 +9,7 @@ except ImportError:
     print ("Create a script 'config.py' that sets 'GITHUB_CLIENT_ID' and 'GITHUB_CLIENT_SECRET'")
     raise
 
-app = application = Bottle()
+app = Flask(__name__)
 
 HTMLBLOB = """
 <!DOCTYPE HTML>
