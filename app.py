@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-from bottle import Bottle, route, run, request
+from bottle import Bottle, route, run, request, redirect
+
+try:
+    from config import GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+except ImportError:
+    print ("Couldn't get the GitHub API tokens")
+    print ("Create a script 'config.py' that sets 'GITHUB_CLIENT_ID' and 'GITHUB_CLIENT_SECRET'")
+    raise
 
 app = application = Bottle()
 
@@ -51,6 +58,11 @@ HTMLBLOB = """
 @app.route('/')
 def index():
     return HTMLBLOB.format()
+
+@app.route("/auth")
+def auth():
+    """Callback URL for the GitHub API"""
+    return redirect("/")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)
