@@ -57,7 +57,7 @@ HTMLBLOB = """
   </head>
   <body>
     <main>
-      <a href="/" id='title'><h1>Github - Issue2Pull</h1></a>
+      <a href="/" id='title'><h1>GitHub - Issue2Pull</h1></a>
       <a href="https://github.com/pR0Ps/gh-i2p"><img id="gh-banner" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
       {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
@@ -68,6 +68,11 @@ HTMLBLOB = """
           </ul>
         {% endif %}
       {% endwith %}
+      {% if session['github_access_token'] %}
+        <p>Authed!</p>
+      {% else %}
+        <p>Not authed!</p>
+      {% endif %}
     </main>
     <footer>Made by <a href="http://cmetcalfe.ca">Carey Metcalfe</a></footer>
 </html>"""
@@ -79,7 +84,7 @@ def index():
 @app.route("/login")
 def login():
     if session.get('github_access_token', None) is None:
-        return github.authorize()
+        return github.authorize(scope="repo")
     return redirect(url_for('index'))
 
 @app.route('/logout')
@@ -89,8 +94,19 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/convert', methods='POST')
-def convert(user, repo, head, base, issue):
-    return str(locals())
+def convert():
+    url = {x: request.args.get(x, None) for x in ('user', 'repo')}
+    params = {x: request.args.get(x, None) for x in ('issue', 'head', 'base')}
+    if None in url.values() or None in params.values():
+        flash("Invalid request", "error")
+        return redirect(url_for("index"))
+
+    try:
+        github.post("repos/{user}/{repo}/pulls".format(**url), data=params)
+        flash("Pull request created!")
+    except flask_github.GitHubError as e:
+        flash("Error: {}".format(str(e)), 'error')
+    return redirect(url_for("index"))
 
 @github.access_token_getter
 def token_getter():
