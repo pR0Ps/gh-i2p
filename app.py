@@ -2,7 +2,7 @@
 
 from flask import Flask, request, session, redirect, url_for, flash
 from flask import render_template_string
-from flask.ext.github import GitHub
+from flask.ext.github import GitHub, GitHubError
 
 try:
     from config import SECRET_KEY, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GITHUB_CALLBACK_URL
@@ -59,6 +59,7 @@ HTMLBLOB = """
     <main>
       <a href="/" id='title'><h1>GitHub - Issue2Pull</h1></a>
       <a href="https://github.com/pR0Ps/gh-i2p"><img id="gh-banner" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+      <p>This service allows you to easily convert a GitHub issue to a pull request.</p>
       {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
           <ul class=flashes>
@@ -69,9 +70,23 @@ HTMLBLOB = """
         {% endif %}
       {% endwith %}
       {% if session['github_access_token'] %}
-        <p>Authed!</p>
+        <form action="convert" method="post">
+          <label for="repo">Repository:</label>
+          <input type="text" id="repo" name="repo" placeholder="ex. pR0Ps/gh-i2p"/>
+
+          <label for="issue">Issue:</label>
+          <input type="number" id="issue" name="issue" value="1" min="1"/>
+
+          <label for="head">Head:</label>
+          <input type="text" id="head" name="head" placeholder="ex. [user:]bugfix"/>
+
+          <label for="base">Master:</label>
+          <input type="text" id="base" name="base" placeholder="ex. master"/>
+
+          <input type="submit" id="submit" value="Convert"/>
+        </form>
       {% else %}
-        <p>Not authed!</p>
+        <a href="login">Log in with GitHub</a>
       {% endif %}
     </main>
     <footer>Made by <a href="http://cmetcalfe.ca">Carey Metcalfe</a></footer>
@@ -93,18 +108,18 @@ def logout():
     flash("Logged out")
     return redirect(url_for('index'))
 
-@app.route('/convert', methods='POST')
+@app.route('/convert', methods=['POST'])
 def convert():
-    url = {x: request.args.get(x, None) for x in ('user', 'repo')}
-    params = {x: request.args.get(x, None) for x in ('issue', 'head', 'base')}
-    if None in url.values() or None in params.values():
+    url = request.form.get('repo', None)
+    params = {x: request.form.get(x, None) for x in ('issue', 'head', 'base')}
+    if url is None or None in params.values():
         flash("Invalid request", "error")
         return redirect(url_for("index"))
 
     try:
-        github.post("repos/{user}/{repo}/pulls".format(**url), data=params)
+        github.post("repos/{0}/pulls".format(url), data=params)
         flash("Pull request created!")
-    except flask_github.GitHubError as e:
+    except GitHubError as e:
         flash("Error: {}".format(str(e)), 'error')
     return redirect(url_for("index"))
 
