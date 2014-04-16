@@ -50,13 +50,13 @@ HTMLBLOB = """
       border: 0;
     }
     div.flash {
+      display: inline-block;
       border-radius: 10px;
       -webkit-border-radius: 10px;
       padding: 15px;
       margin: 10px auto 10px auto;
       border: 1px solid;
-      max-width: 300px;
-      width: 80%
+      max-width: 570px;
     }
     div.error {
       background-color: #F2DEDE;
