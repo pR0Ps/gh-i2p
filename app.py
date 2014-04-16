@@ -51,6 +51,7 @@ HTMLBLOB = """
     }
     div.flash {
       display: inline-block;
+      text-align: left;
       border-radius: 10px;
       -webkit-border-radius: 10px;
       padding: 15px;
@@ -106,13 +107,22 @@ HTMLBLOB = """
       <a href="/" id='title'><h1>GitHub - Issue2Pull</h1></a>
       <a href="https://github.com/pR0Ps/gh-i2p"><img id="gh-banner" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
       <p>This service allows you to easily convert a GitHub issue to a pull request.</p>
-      {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-          {% for c, m in messages %}
-            <div class="flash {{ c }}">{{ m }}</div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+      {% for c in ('message', 'error') %}
+        {% with messages = get_flashed_messages(category_filter=[c]) %}
+          {% if messages %}
+            <div class="flash {{ c }}">
+            {{ messages[0] }}
+            {% if messages|length > 1 %}
+              <ul>
+              {% for m in messages[1:] %}
+                <li>{{ m }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+            </div><br/>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
       {% if session['github_access_token'] %}
         <p>Signed in as {{ session['username'] }} (<a href="logout">logout</a>)</p>
         <form action="convert" method="post">
@@ -179,12 +189,28 @@ def convert():
         # returns anything other than a 4xx or a 2xx code
         flash("Error from GitHub: Unknown Error")
     except GitHubError as e:
+        # If there is more than 1 flash, the first will be the 'title'
+        # and the rest details.
+        flash("Error from GitHub: '{}'".format(str(e)), 'error')
         for err in e.response.json().get("errors", []):
-            if err.get("message", None):
-                flash("Error from GitHub: {}".format(err["message"]), 'error')
-                break
-        else:
-            flash("Error from GitHub: {}".format(str(e)), 'error')
+            msg = err.get("message", "")
+            value = err.get("value", "")
+
+            # Field and code should always be sent, but sometimes aren't. Being safe here.
+            # Ex. No field retured when trying to make a pull request that already exists.
+            field = err.get("field", "")
+            code = err.get("code", "")
+
+            if msg:
+                # Most human-readable
+                flash(msg, 'error')
+            elif code == "invalid":
+                if value:
+                    flash ("Invalid value '{0}' for {1}".format(value, field), 'error')
+                else:
+                    flash ("Invalid value for {0}".format(field), 'error')
+            else:
+                flash ("Returned a code '{0}' for field '{1}'".format(code, field))
 
     return redirect(url_for("index"))
 
