@@ -68,6 +68,33 @@ HTMLBLOB = """
       border-color: #D6E9C6;
       color: #3C763D;
     }
+    form:not(#login) {
+      width: 300px;
+      margin: 0px auto;
+      text-align: left;
+    }
+    table {
+      width: 300px;
+    }
+    td.label {
+      width: 110px;
+    }
+    input {
+      padding: 5px 15px;
+      margin: 1px 1px;
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      border: 2px solid;
+    }
+    input[type=submit] {
+      cursor:pointer;
+      font-weight: bold;
+      background: #C0C0C0;
+      margin-top: 10px
+    }
+    input#issue {
+      width: 25px;
+    }
     footer {
       padding: 25px;
       text-align: center;
@@ -89,19 +116,28 @@ HTMLBLOB = """
       {% if session['github_access_token'] %}
         <p>Signed in as {{ session['username'] }} (<a href="logout">logout</a>)</p>
         <form action="convert" method="post">
-          <label for="repo">Repository:</label>
-          <input type="text" id="repo" name="repo" placeholder="ex. pR0Ps/gh-i2p"/>
-
-          <label for="issue">Issue:</label>
-          <input type="number" id="issue" name="issue" value="1" min="1"/>
-
-          <label for="head">Head:</label>
-          <input type="text" id="head" name="head" placeholder="ex. [user:]bugfix"/>
-
-          <label for="base">Master:</label>
-          <input type="text" id="base" name="base" placeholder="ex. master"/>
-
-          <input type="submit" id="submit" value="Convert"/>
+          <table><tbody>
+            <tr>
+              <td class="label"><label for="repo">Repository:</label></td>
+              <td class="input"><input type="text" id="repo" name="repo" placeholder="ex. pR0Ps/gh-i2p"/></td>
+            </tr>
+            <tr>
+              <td><label for="issue">Issue:</label></td>
+              <td><input type="number" id="issue" name="issue" value="1" min="1"/></td>
+            </tr>
+            <tr>
+              <td><label for="head">Head:</label></td>
+              <td><input type="text" id="head" name="head" placeholder="ex. [user:]bugfix"/></td>
+            </tr>
+            <tr>
+              <td><label for="base">Base:</label></td>
+              <td><input type="text" id="base" name="base" placeholder="ex. master"/></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><input type="submit" id="submit" value="Convert"/></td>
+            </tr>
+          </tbody></table>
         </form>
       {% else %}
         <form id="login" action="login" method="get">
