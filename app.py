@@ -175,7 +175,13 @@ def convert():
         github.post("repos/{0}/pulls".format(url), data=params)
         flash("Pull request created!")
     except GitHubError as e:
-        flash("Error from GitHub: {}".format(str(e)), 'error')
+        for err in e.response.json().get("errors", []):
+            if err.get("message", None):
+                flash("Error from GitHub: {}".format(err["message"]), 'error')
+                break
+        else:
+            flash("Error from GitHub: {}".format(str(e)), 'error')
+
     return redirect(url_for("index"))
 
 @github.access_token_getter
