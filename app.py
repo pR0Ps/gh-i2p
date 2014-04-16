@@ -174,6 +174,10 @@ def convert():
     try:
         github.post("repos/{0}/pulls".format(url), data=params)
         flash("Pull request created!")
+    except AssertionError as e:
+        # The GitHub-Flask library asserts false when GitHub
+        # returns anything other than a 4xx or a 2xx code
+        flash("Error from GitHub: Unknown Error")
     except GitHubError as e:
         for err in e.response.json().get("errors", []):
             if err.get("message", None):
