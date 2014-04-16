@@ -167,8 +167,8 @@ def logout():
 def convert():
     url = request.form.get('repo', None)
     params = {x: request.form.get(x, None) for x in ('issue', 'head', 'base')}
-    if url is None or None in params.values():
-        flash("Invalid request", "error")
+    if any(not x for x in params.values()) or not url:
+        flash("Invalid request: All fields are required", "error")
         return redirect(url_for("index"))
 
     try:
