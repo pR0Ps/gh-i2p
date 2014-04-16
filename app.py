@@ -69,9 +69,8 @@ HTMLBLOB = """
       color: #3C763D;
     }
     footer {
-      position: absolute;
-      bottom: 50px;
-      right: 50px;
+      padding: 25px;
+      text-align: center;
     }
     </style>
   </head>
