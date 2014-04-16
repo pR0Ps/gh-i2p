@@ -182,8 +182,13 @@ def convert():
         return redirect(url_for("index"))
 
     try:
-        github.post("repos/{0}/pulls".format(url), data=params)
-        flash("Pull request created!")
+        r = github.post("repos/{0}/pulls".format(url), data=params)
+        url = r.get("html_url", None)
+        if url:
+            flash("Pull request created! See it <a href='{}'>here</a>.".format(url))
+        else:
+            flash("Pull request created!")
+
     except AssertionError as e:
         # The GitHub-Flask library asserts false when GitHub
         # returns anything other than a 4xx or a 2xx code
