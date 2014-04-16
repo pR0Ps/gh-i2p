@@ -94,7 +94,7 @@ HTMLBLOB = """
       margin-top: 10px
     }
     input#issue {
-      width: 25px;
+      width: 45px;
     }
     footer {
       padding: 25px;
