@@ -129,19 +129,19 @@ HTMLBLOB = """
           <table><tbody>
             <tr>
               <td class="label"><label for="repo">Repository:</label></td>
-              <td class="input"><input type="text" id="repo" name="repo" placeholder="ex. pR0Ps/gh-i2p"/></td>
+              <td class="input"><input type="text" id="repo" name="repo" value="{{ request.args.get('repo', '') }}" placeholder="ex. pR0Ps/gh-i2p"/></td>
             </tr>
             <tr>
               <td><label for="issue">Issue:</label></td>
-              <td><input type="number" id="issue" name="issue" value="1" min="1"/></td>
+              <td><input type="number" id="issue" name="issue" value="{{ request.args.get('issue', '1')}}" min="1"/></td>
             </tr>
             <tr>
               <td><label for="head">Head:</label></td>
-              <td><input type="text" id="head" name="head" placeholder="ex. [user:]bugfix"/></td>
+              <td><input type="text" id="head" name="head" value="{{ request.args.get('head', '') }}" placeholder="ex. [user:]bugfix"/></td>
             </tr>
             <tr>
               <td><label for="base">Base:</label></td>
-              <td><input type="text" id="base" name="base" placeholder="ex. master"/></td>
+              <td><input type="text" id="base" name="base" value="{{ request.args.get('base', '') }}" placeholder="ex. master"/></td>
             </tr>
             <tr>
               <td></td>
