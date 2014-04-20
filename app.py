@@ -177,9 +177,12 @@ def logout():
 def convert():
     url = request.form.get('repo', None)
     params = {x: request.form.get(x, None) for x in ('issue', 'head', 'base')}
+
+    error_page = url_for("index", repo=url, **params)
+
     if any(not x for x in params.values()) or not url:
         flash("Invalid request: All fields are required", "error")
-        return redirect(url_for("index"))
+        return redirect(error_page)
 
     try:
         r = github.post("repos/{0}/pulls".format(url), data=params)
@@ -188,6 +191,8 @@ def convert():
             flash("Pull request created! See it <a href='{}'>here</a>.".format(url))
         else:
             flash("Pull request created!")
+
+        return redirect(url_for("index"))
 
     except AssertionError as e:
         # The GitHub-Flask library asserts false when GitHub
@@ -217,7 +222,7 @@ def convert():
             else:
                 flash ("Returned a code '{0}' for field '{1}'".format(code, field))
 
-    return redirect(url_for("index"))
+    return redirect(error_page)
 
 @github.access_token_getter
 def token_getter():
