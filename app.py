@@ -220,7 +220,7 @@ def convert():
                 else:
                     flash ("Invalid value for {0}".format(field), 'error')
             else:
-                flash ("Returned a code '{0}' for field '{1}'".format(code, field))
+                flash ("Returned a code '{0}' for field '{1}'".format(code, field), 'error')
 
     return redirect(error_page)
 
