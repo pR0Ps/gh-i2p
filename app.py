@@ -194,10 +194,6 @@ def convert():
 
         return redirect(url_for("index"))
 
-    except AssertionError as e:
-        # The GitHub-Flask library asserts false when GitHub
-        # returns anything other than a 4xx or a 2xx code
-        flash("Error from GitHub: Unknown Error")
     except GitHubError as e:
         # If there is more than 1 flash, the first will be the 'title'
         # and the rest details.
