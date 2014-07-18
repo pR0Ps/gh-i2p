@@ -91,7 +91,7 @@ HTMLBLOB = """
       cursor:pointer;
       font-weight: bold;
       background: #C0C0C0;
-      margin-top: 10px
+      margin-top: 10px;
     }
     input#issue {
       width: 45px;
