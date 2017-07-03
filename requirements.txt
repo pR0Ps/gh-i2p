@@ -1,2 +1,2 @@
-Flask==0.10.1
-GitHub-Flask==1.0.0
+Flask==0.12.2
+GitHub-Flask==3.1.7

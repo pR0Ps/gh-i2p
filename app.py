@@ -2,7 +2,7 @@
 
 from flask import Flask, request, session, redirect, url_for, flash
 from flask import render_template_string
-from flask.ext.github import GitHub, GitHubError
+from flask_github import GitHub, GitHubError
 
 try:
     from config import SECRET_KEY, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GITHUB_CALLBACK_URL
